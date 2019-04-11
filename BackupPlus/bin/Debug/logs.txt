@@ -1,0 +1,21 @@
+2019-04-10 15-04-22----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 162
+2019-04-10 15-04-25----System Closed
+2019-04-10 15-05-15----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 162
+2019-04-10 15-05-16----System Closed
+2019-04-10 15-08-16----All params were loaded...
+2019-04-10 15-39-30----All params were loaded...
+2019-04-10 15-41-42----All params were loaded...
+2019-04-10 15-42-28----All params were loaded...
+2019-04-10 15-50-08----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 159
+2019-04-10 15-50-14----System Closed
+2019-04-10 15-50-22----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 159
+2019-04-10 15-50-23----System Closed
+2019-04-10 15-50-37----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 159
+2019-04-10 15-52-16----System.NullReferenceException: Object reference not set to an instance of an object.
+   at BackupPlus.Form1.Form1_Load(Object sender, EventArgs e) in C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\Form1.cs:line 159
+2019-04-10 16-11-22----System Closed

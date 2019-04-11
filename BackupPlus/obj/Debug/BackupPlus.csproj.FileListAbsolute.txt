@@ -1,0 +1,13 @@
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\bin\Debug\BackupPlus.exe.config
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\bin\Debug\BackupPlus.exe
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\bin\Debug\BackupPlus.pdb
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.csprojAssemblyReference.cache
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.Form1.resources
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.Properties.Resources.resources
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.csproj.GenerateResource.cache
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.csproj.CoreCompileInputs.cache
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.exe
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.pdb
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\bin\Debug\WinSCP.exe
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\bin\Debug\WinSCPnet.dll
+C:\Users\moraljo1\source\repos\BackupPlus\BackupPlus\obj\Debug\BackupPlus.csproj.CopyComplete

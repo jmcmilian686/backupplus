@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+ <appSettings>
+	<add key="Server" value="localhost:21" />
+	<add key="Username" value="test" />
+	<add key="Password" value="test" />
+	<add key="ClientF" value="C:\Users\moraljo1\Desktop\Desktop\Lab Z\Servers Versions\Version0413\upper\Upper" />
+	<add key="Fpath" value="/" />
+	<add key="Service" value="0" />
+	<add key="IntH" value="0" />
+	<add key="IntM" value="1" />
+	<add key="IntS" value="0" />
+	<add key="Cleanup" value="1" />
+	<add key="Keep" value="3" />
+	<add key="ClName" value="Parcel" />
+	<add key="Level" value="1" />
+</appSettings>
+<Servers>
+	<Server>
+		<name>Unit-Upper</name>
+		<ip>192.168.2.102</ip>
+		<mask>255.255.0.0</mask>
+		<gateway>0</gateway>
+		<dns>0</dns>
+	</Server>
+	<Server>
+		<name>Unit-Upper</name>
+		<ip>192.168.2.101</ip>
+		<mask>255.255.0.0</mask>
+		<gateway>0</gateway>
+		<dns>0</dns>
+	</Server>
+</Servers>	
+</configuration>
