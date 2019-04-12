@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Cache;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace BackupPlus
         string logs = "";
         string prvLog = "";
         string installPath = "";
-
+        ArrayList nics;
         List<String> FileNameList;
        
         public Form1()
@@ -196,6 +197,7 @@ namespace BackupPlus
 
 
                 }
+                updateComboServ();
 
                 //===============================
 
@@ -216,7 +218,7 @@ namespace BackupPlus
 
             //====Loading NIC cards information
 
-            ArrayList nics = NetworkManagement.GetNICNames();
+            nics = NetworkManagement.GetNICNames();
 
             foreach (var item in nics)
             {
@@ -840,21 +842,272 @@ namespace BackupPlus
 
         private void button9_Click(object sender, EventArgs e)
         {
-            Server serv = new Server();
-            serv.name = "Upper";
-            serv.ip = "192.168.2.102";
-            serv.mask = "255.255.0.0";
-            serv.dns = "";
-
-            string xml = XmlClass.GetXMLFromObject(serv);
-
-
-
+            
         }
 
         private void button12_Click(object sender, EventArgs e)
         {
+            if (textBox18.Text!="" && textBox14.Text!="" && textBox16.Text!="")
+            {
+                Server newServ = new Server();
+                string errMess = "";
+                string ip = textBox14.Text;
+                string name = textBox18.Text;
+                string mask = textBox16.Text;
+                string gateway = textBox15.Text != "" ? textBox15.Text : "0";
+                string dns = textBox17.Text != "" ? textBox17.Text : "0";
+                try
+                {
 
+                    IPAddress ipAdd = IPAddress.Parse(ip);//checking the right format for ip address
+                    IPAddress maskAdd = IPAddress.Parse(mask);
+
+                    int repIp = serversL.Where(p => p.ip == ip).Count();
+                    if (repIp>0)
+                    {
+                        var servEx = serversL.Where(k => k.name == name).FirstOrDefault();
+                        if (servEx != null)
+                        {
+                            serversL.Remove(servEx);
+                        }
+                        else
+                        {
+                            MessageBox.Show("The IP is already been used by another Server ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                        }
+                        
+                    }
+                    else
+                    {
+                        var servEx = serversL.Where(k => k.name == name).FirstOrDefault();
+                        if (servEx != null)
+                        {
+                            serversL.Remove(servEx);
+                        }
+                        newServ.ip = ip;
+                        newServ.mask = mask;
+                        newServ.name = name;
+                        newServ.gateway = gateway;
+                        newServ.dns = dns;
+
+
+                        serversL.Add(newServ);
+                        updateComboServ();
+                        textBox14.Text = "";
+                        textBox15.Text = "";
+                        textBox16.Text = "";
+                        textBox17.Text = "";
+                        textBox18.Text = "";
+
+                        
+                    }
+                    saveServersXml();
+                    updateComboServ();
+                }
+                catch (ArgumentNullException ex)
+                {
+                    errMess = ex.Source + "--" + ex.Message;
+                    MessageBox.Show(errMess, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+                }
+                catch (FormatException ex)
+                {
+
+                    errMess = ex.Source + "--" + ex.Message;
+                    MessageBox.Show(errMess, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                }
+                catch (Exception ex)
+                {
+                    errMess = ex.Source + "--" + ex.Message;
+                    MessageBox.Show(errMess, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                }
+
+
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selected = comboBox1.SelectedItem.ToString();
+
+            var server = serversL.Where(x => x.name == selected).FirstOrDefault();
+
+            if (server !=null)
+            {
+                textBox14.Text=server.ip;
+                textBox16.Text = server.mask;
+                textBox18.Text = server.name;
+            }
+
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox3.Checked)
+            {
+                textBox14.Enabled = true;
+                textBox15.Enabled = true;
+                textBox16.Enabled = true;
+                textBox17.Enabled = true;
+                textBox18.Enabled = true;
+                button12.Enabled = true;
+            }
+            else
+            {
+                textBox14.Enabled = false;
+                textBox15.Enabled = false;
+                textBox16.Enabled = false;
+                textBox17.Enabled = false;
+                textBox18.Enabled = false;
+                button12.Enabled = false;
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            string selected = comboBox1.SelectedItem.ToString();
+
+            serversL.Remove(serversL.Where(x => x.name == selected).FirstOrDefault());
+            updateComboServ();
+
+            textBox14.Text = "";
+            textBox15.Text = "";
+            textBox16.Text = "";
+            textBox17.Text = "";
+            textBox18.Text = "";
+
+            if (comboBox1.Items.Count>=1)
+            {
+                comboBox1.SelectedItem = comboBox1.Items[0];
+            }
+            else
+            {
+                comboBox1.Text="";
+                button11.Enabled = false;
+            }
+            saveServersXml();
+
+        }
+
+        public void updateComboServ()
+        {
+            comboBox1.Items.Clear();
+            if (serversL.Count > 0)
+            {
+                foreach (var itemServ in serversL)
+                {
+                    comboBox1.Items.Add(itemServ.name);
+                }
+            }
+        }
+
+        public void saveServersXml()
+        {
+            //starting saving process
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(AppContext.BaseDirectory + "\\config.xml");
+            XmlNodeList servXml = doc.GetElementsByTagName("Servers");
+
+            if (servXml.Count > 0)
+            {
+
+                doc.GetElementsByTagName("Servers").Item(0).RemoveAll();
+
+                foreach (var item in serversL)
+                {
+                    string newnodest = @"<Server>
+		                                                <name>" + item.name + @"</name>
+		                                                <ip>" + item.ip + @"</ip>
+		                                                <mask>" + item.mask + @"</mask>
+		                                                <gateway>" + item.gateway + @"</gateway>
+		                                                <dns>" + item.dns + @"</dns>
+	                                                </Server>";
+
+                    XmlNode node = doc.CreateNode(XmlNodeType.Element, "Server", null);
+                    XmlDocument elem = new XmlDocument();
+                    elem.LoadXml(newnodest);
+                    XmlNode newnode = elem.DocumentElement;
+                    node.InnerXml = newnode.InnerXml;
+                    XmlWhitespace ws = doc.CreateWhitespace("\r\n\t");
+                    doc.GetElementsByTagName("Servers").Item(0).AppendChild(ws);
+                    doc.GetElementsByTagName("Servers").Item(0).AppendChild(node);
+
+                }
+                XmlWhitespace wse = doc.CreateWhitespace("\r\n");
+                doc.GetElementsByTagName("Servers").Item(0).AppendChild(wse);
+                doc.PreserveWhitespace = true;
+                doc.Save(AppContext.BaseDirectory + "\\config.xml");
+
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedItem != null)
+            {
+                button13.Enabled = true;
+
+
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            if (nics.Count>0)
+            {
+
+                string selected = comboBox1.SelectedItem.ToString();
+                string nicSelec = comboBox2.SelectedItem.ToString();
+
+                Server selectedServ = serversL.Where(x => x.name == selected).FirstOrDefault();
+
+                //=====ping
+
+                bool pingable = false;
+                Ping pinger = null;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+                try
+                {
+                    pinger = new Ping();
+                    PingReply reply = pinger.Send(selectedServ.ip);
+                    pingable = reply.Status == IPStatus.Success;
+                }
+                catch (PingException)
+                {
+                    // Discard PingExceptions and return false;
+                }
+                finally
+                {
+                    if (pinger != null)
+                    {
+                        pinger.Dispose();
+                    }
+                }
+
+                if (pingable)
+                {
+                    MessageBox.Show("The IP: "+ selectedServ.ip+" is been used in the actual subnet", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                }
+                else
+                {
+                    try
+                    {
+                        NetworkManagement.SetIP(nicSelec, selectedServ.ip, selectedServ.mask, selectedServ.gateway, selectedServ.dns);
+
+                        MessageBox.Show("The IP Address has been changed", "Configured", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                    }
+                    catch (Exception exp)
+                    {
+
+                        MessageBox.Show("There was an error configuring the Adapter"+exp.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                    }
+                   
+                }
+
+            }
         }
     }
 }

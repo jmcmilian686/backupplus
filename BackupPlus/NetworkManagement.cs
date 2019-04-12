@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Management;
+using System.Net.NetworkInformation;
 
 namespace BackupPlus
 {
@@ -43,37 +45,59 @@ namespace BackupPlus
         /// <param name="DnsSearchOrder">Comma delimited DNS IP</param>
         public static void SetIP(string nicName, string IpAddresses, string SubnetMask, string Gateway, string DnsSearchOrder)
         {
-            ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
-            ManagementObjectCollection moc = mc.GetInstances();
+            //ManagementClass mc = new ManagementClass(new ManagementPath("Win32_NetworkAdapterConfiguration"));
+            //ManagementObjectCollection moc = mc.GetInstances();
 
-            foreach (ManagementObject mo in moc)
-            {
-                // Make sure this is a IP enabled device. Not something like memory card or VM Ware
-                if ((bool)mo["IPEnabled"])
-                {
-                    if (mo["Caption"].Equals(nicName))
-                    {
+            //foreach (ManagementObject mo in moc)
+            //{
+            //    // Make sure this is a IP enabled device. Not something like memory card or VM Ware
+            //    if ((bool)mo["IPEnabled"])
+            //    {
+            //        if (mo["Caption"].Equals(nicName))
+            //        {
 
-                        ManagementBaseObject newIP = mo.GetMethodParameters("EnableStatic");
-                        ManagementBaseObject newGate = mo.GetMethodParameters("SetGateways");
-                        ManagementBaseObject newDNS = mo.GetMethodParameters("SetDNSServerSearchOrder");
 
-                        newGate["DefaultIPGateway"] = new string[] { Gateway };
-                        newGate["GatewayCostMetric"] = new int[] { 1 };
+            //            using (var newIP = mo.GetMethodParameters("EnableStatic"))
+            //            {
 
-                        newIP["IPAddress"] = IpAddresses.Split(',');
-                        newIP["SubnetMask"] = new string[] { SubnetMask };
+            //                newIP["IPAddress"] = new[] { IpAddresses };
+            //                newIP["SubnetMask"] = new[] { SubnetMask };
+            //                ManagementBaseObject setIP = mo.InvokeMethod("EnableStatic", newIP, null);
+            //            }
+            //            ManagementBaseObject newGate = mo.GetMethodParameters("SetGateways");
+            //            ManagementBaseObject newDNS = mo.GetMethodParameters("SetDNSServerSearchOrder");
 
-                        newDNS["DNSServerSearchOrder"] = DnsSearchOrder.Split(',');
 
-                        ManagementBaseObject setIP = mo.InvokeMethod("EnableStatic", newIP, null);
-                        ManagementBaseObject setGateways = mo.InvokeMethod("SetGateways", newGate, null);
-                        ManagementBaseObject setDNS = mo.InvokeMethod("SetDNSServerSearchOrder", newDNS, null);
 
-                        break;
-                    }
-                }
-            }
+            //            if (Gateway!="" && Gateway!="0")
+            //            {
+            //                newGate["DefaultIPGateway"] = new string[] { Gateway };
+            //                newGate["GatewayCostMetric"] = new int[] { 1 };
+            //                ManagementBaseObject setGateways = mo.InvokeMethod("SetGateways", newGate, null);
+            //            }
+
+
+            //            if (DnsSearchOrder!="" && DnsSearchOrder!="0")
+            //            {
+            //                newDNS["DNSServerSearchOrder"] = DnsSearchOrder.Split(',');
+            //                ManagementBaseObject setDNS = mo.InvokeMethod("SetDNSServerSearchOrder", newDNS, null);
+            //            }
+
+
+            //            break;
+            //        }
+            //    }
+            //}
+
+            string nic = nicName.Split('-')[0];
+
+            Process p = new Process();
+            ProcessStartInfo psi = new ProcessStartInfo("netsh", "interface ip set address " + nic + " static " + IpAddresses+" "+ SubnetMask);
+            psi.UseShellExecute = true;
+            p.StartInfo = psi;
+            p.StartInfo.Verb = "runas";
+            p.Start();
+            System.Threading.Thread.Sleep(20000);
         }
 
         /// <summary>
@@ -120,19 +144,31 @@ namespace BackupPlus
         {
             ArrayList nicNames = new ArrayList();
 
-            ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
-            ManagementObjectCollection moc = mc.GetInstances();
+            //ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            //ManagementObjectCollection moc = mc.GetInstances();
 
-            foreach (ManagementObject mo in moc)
+            //foreach (ManagementObject mo in moc)
+            //{
+            //    if ((bool)mo["ipEnabled"])
+            //    {
+            //        nicNames.Add(mo["Caption"]);
+            //    }
+            //}
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var item in nics)
             {
-                if ((bool)mo["ipEnabled"])
+                if (item.OperationalStatus==OperationalStatus.Up)
                 {
-                    nicNames.Add(mo["Caption"]);
+                    nicNames.Add(item.Name + "-" + item.NetworkInterfaceType.ToString());
                 }
+                
             }
 
             return nicNames;
         }
+
+
+
 
         #endregion
     }
